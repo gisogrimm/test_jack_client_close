@@ -59,6 +59,8 @@ int main(int argc, char** argv)
   }
   fprintf(stderr, "%1.6f jack_client_open succeeded\n", sec_since_start());
   jack_on_shutdown(jc1, jc1_shutdown, NULL);
+  err = jack_activate( jc1 );
+  fprintf(stderr,"%1.6f jack_activate(jc1) returned %d\n", sec_since_start(),err);
   sleep(1);
   // first client is open
   jc2 = jack_client_open("cli2", 0, &stat);
@@ -69,11 +71,16 @@ int main(int argc, char** argv)
   }
   fprintf(stderr, "%1.6f jack_client_open succeeded\n", sec_since_start());
   jack_on_shutdown(jc2, jc2_shutdown, NULL);
+  err = jack_activate( jc2 );
+  fprintf(stderr,"%1.6f jack_activate(jc2) returned %d\n", sec_since_start(),err);
   sleep(1);
   // do something
   port = jack_port_by_name(jc1, "system:capture_1");
   fprintf(stderr, "%1.6f port type is \"%s\"\n", sec_since_start(),
           jack_port_type(port));
+  sleep(1);
+  err = jack_deactivate( jc1 );
+  fprintf(stderr,"%1.6f jack_deactivate(jc1) returned %d\n", sec_since_start(),err);
   sleep(1);
   err = jack_client_close(jc1);
   fprintf(stderr, "%1.6f jack_client_close(jc1) returned %d\n",
@@ -83,6 +90,9 @@ int main(int argc, char** argv)
   port = jack_port_by_name(jc2, "system:capture_1");
   fprintf(stderr, "%1.6f port type jc2 is \"%s\"\n", sec_since_start(),
           jack_port_type(port));
+  sleep(1);
+  err = jack_deactivate( jc2 );
+  fprintf(stderr,"%1.6f jack_deactivate(jc2) returned %d\n", sec_since_start(),err);
   sleep(1);
   err = jack_client_close(jc2);
   fprintf(stderr, "%1.6f jack_client_close(jc2) returned %d\n",
